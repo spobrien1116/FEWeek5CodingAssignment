@@ -1,12 +1,16 @@
 // This is an app designed to make smoothies. You will be able to do the following:
-// 1. Create a list of ingredients going into the smoothie.
-// 2. View the contents of a smoothie.
-// 3. Delete a recipe for a smoothie.
+// * Create a list of ingredients available for smoothies, view the list, and delete from the list.
+// * Create a smoothie recipe with a name and ingredients, view the contents of a smoothie, and
+// view all the created smoothie recipes.
+// * Delete a recipe for a smoothie.
+// The breakdown of each option will be presented in the menu class.
+// Main classes will be menu and smoothie, with only one instance of menu being instantiated.
 
 class Smoothie {
     constructor(smoothieName) {
         this.smoothieName = smoothieName;
         this.smoothieIngredients = [];
+        this.completedSmoothie = [];
     }
 
     createSmoothie(ingredients) {
@@ -30,13 +34,11 @@ class Smoothie {
             }
         }
         alert(`You created a smoothie recipe named ${this.smoothieName}. It contains the following ingredients:
-        ${this.smoothieIngredients.join(', ')}.`);
+        ${this.smoothieIngredients}.`);
+        let completedSmoothie = [this.smoothieName, this.smoothieIngredients];
+        return completedSmoothie;
     }
 
-    // describeSmoothie() {
-    //     return `${this.smoothieName} is the name of this smoothie.
-    //     Its components are: ${this.smoothie}. Sounds good.`;
-    // }
 }
 
 
@@ -44,18 +46,21 @@ class Menu {
     constructor() {
         this.smoothies = [];
         this.ingredient = '';
-        this.ingredients = [];
+        this.ingredients = ["apple", "orange", "banana"];
     }
 
+    // Method for case 1: adding an available ingredient to the list of all available ingredients.
     addAvailableIngredient(ingredient) {
         this.ingredients.push(ingredient);
         alert(`You added ${ingredient} as an ingredient.`);
     }
 
+    // Method for case 2: listing all available ingredients.
     listIngredients() {
         alert(`Here is a list of all ingredients available to make a smoothie: ${this.ingredients}.`);
     }
 
+    // Method for case 3: removing an ingredient from the list of all available ingredients.
     deleteAvailabeIngredient() {
         let deleteIngredient = prompt(`What ingredient would you like to remove from the list of available ingredients?
         Please enter the index value for the ingredient you want removed.`);
@@ -69,6 +74,32 @@ class Menu {
         
     }
 
+    // Method for case 5: listing all smoothie recipes.
+    listSmoothieNames() {
+        // This is a two-dimensional array. It is an array of arrays.
+        alert(`Here is a list of all smoothie recipe names:`);
+        for (let i = 0; i < this.smoothies.length; i++) {
+            alert(this.smoothies[i][0]);
+        }
+    }
+
+    // Method for case 6: listing the name and ingredient list of a smoothie recipe.
+    describeSmoothie(chosenSmoothie) {
+        alert(`${this.smoothies[chosenSmoothie][0]} is the name of this smoothie.
+        Its components are:`);
+        for (let i = 1; i <this.smoothies.length; i++) {
+            alert(this.smoothies[chosenSmoothie][i]);
+        }
+        alert("Sounds good!");
+    }
+
+    // Method for case 7: deleting a smoothie reciple from the list of smoothie recipes.
+    deleteSmoothie(removeSmoothie) {
+        alert(`You are deleting ${this.smoothies[removeSmoothie][0]} from the list of smoothie recipes.`);
+        this.smoothies.splice(removeSmoothie, 1);
+    }
+
+    // The main menu of the entire application. Provides all the main menu options needed.
     runMenu() {
         let choice = null;
         while (choice !== '0') {
@@ -77,8 +108,8 @@ class Menu {
             2) List all available ingredients.
             3) Delete an ingredient from the list of available ingredients.
             4) Create a smoothie.
-            5) List all smoothie recipes.
-            6) Describe a created smoothie.
+            5) List all smoothie recipe names.
+            6) Describe a created smoothie name's ingredients.
             7) Delete a created smoothie.`);
             switch (choice) {
                 case '1':
@@ -99,19 +130,31 @@ class Menu {
                     alert("You chose to create a smoothie.");
                     let nameASmoothie = prompt("What is the name of the smoothie you are looking to create?");
                     let smoothie = new Smoothie(nameASmoothie);
-                    smoothie.createSmoothie(this.ingredients);
+                    this.smoothies.push(smoothie.createSmoothie(this.ingredients));
                     break;
                 case '5':
-                    alert("You chose to list all smoothie recipes.");
-                    // this.listSmoothies();
+                    alert("You chose to list all smoothie recipes by name.");
+                    this.listSmoothieNames();
                     break;
                 case '6':
                     alert("You chose to describe a smoothie recipe.");
-                    // this.describeSmoothie();
+                    let chosenSmoothie = prompt("What is the index of the smoothie you are looking to describe?");
+                    if (chosenSmoothie > -1 && chosenSmoothie < this.smoothies.length) {
+                        this.describeSmoothie(chosenSmoothie);
+                    } else {
+                        alert("You chose an index that does not fall within the confines of the list of all smoothies.");
+                        alert("No smoothie recipe will be described.");
+                    }
                     break;
                 case '7':
                     alert("You chose to delete a smoothie recipe.")
-                    // this.deleteSmoothie();
+                    let removeSmoothie = prompt("what is the index of the smoothie you are looking to delete?");
+                    if (removeSmoothie > -1 && removeSmoothie < this.smoothies.length) {
+                        this.deleteSmoothie(removeSmoothie);
+                    } else {
+                        alert("You chose an index that does not fall within the confines of the list of all smoothies.");
+                        alert("No smoothie recipes have been deleted.");
+                    }
                     break;
                 case '0':
                     alert("You have chosen to close the smoothie menu.");
@@ -125,5 +168,6 @@ class Menu {
     }
 }
 
+// Creates a new instance of the Menu, then runs it. There is only need for the menu to be instantiated once.
 let menu = new Menu();
 menu.runMenu();
